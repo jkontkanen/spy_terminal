@@ -128,7 +128,9 @@
         <br>
         <button id="playBtn" onclick="document.getElementById('bossVideo').play()" style="display: none;">▶ PLAY MESSAGE</button>
         <button id="replayBtn" onclick="document.getElementById('bossVideo').currentTime = 0; document.getElementById('bossVideo').play()" style="display: none;">↺ REPLAY</button>
-        <button onclick="goToPage('pageB')">NEXT STEP ➔</button>
+        <button id="nextBtn" onclick="goToPage('pageB');" style="display: none;">
+            NEXT STEP ➔
+        </button>
     </div>
     
     <audio id="spyAudio" src="spytheme.mp3" loop preload="auto"></audio>
@@ -248,6 +250,17 @@ let fadeInterval;
             if (playBtn) playBtn.style.display = 'inline-block';
             if (replayBtn) replayBtn.style.display = 'inline-block';
         });        
+
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Reveal the "NEXT STEP" button when the video completes
+        bossVideo.addEventListener('ended', () => {
+            if (nextBtn) {
+                nextBtn.style.display = 'inline-block';
+                // Optional: Scroll down smoothly so they immediately notice the button appeared
+                nextBtn.scrollIntoView({ behavior: 'smooth' });
+            }
+        });       
     </script>
 </body>
 </html>
