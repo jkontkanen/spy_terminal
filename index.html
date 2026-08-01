@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW VAULT TERMINAL</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff41;
+            font-family: "Courier New", Courier, monospace;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .page { display: none; width: 100%; max-width: 600px; }
+        .active { display: block; }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 15px #00ff41;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        video {
+            width: 100%;
+            /* Caps the width so the portrait video doesn't become massively tall on a tablet */
+            max-width: 320px; 
+            
+            /* Forces the HTML container to the vertical dimensions */
+            aspect-ratio: 9 / 16; 
+            
+            /* The magic property: scales the video to fill the 9:16 box, cropping the left/right bars */
+            object-fit: cover; 
+            
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 15px #00ff41;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        button, input {
+            background-color: #050505;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-family: inherit;
+            margin: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background-color: #00ff41;
+            color: #050505;
+        }
+        input { text-align: center; width: 80%; max-width: 300px; }
+        input:focus { outline: none; box-shadow: 0 0 10px #00ff41; }
+        .error { color: #ff003c; display: none; margin-top: 10px; font-weight: bold; }
+        .glitch-text { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE A: VIDEO BRIEFING -->
+    <div id="pageA" class="page active">
+        <div class="glitch-text">INCOMING TRANSMISSION...</div>
+        <video id="bossVideo" playsinline>
+            <source src="boss.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <br>
+        <button onclick="document.getElementById('bossVideo').play()">▶ PLAY MESSAGE</button>
+        <button onclick="document.getElementById('bossVideo').currentTime = 0; document.getElementById('bossVideo').play()">↺ REPLAY</button>
+        <button onclick="goToPage('pageB')">NEXT STEP ➔</button>
+    </div>
+
+    <audio id="spyAudio" src="spytheme.mp3" loop preload="auto"></audio>
+    <!-- PAGE B: RECON & OVERRIDE -->
+    <div id="pageB" class="page">
+        <div class="glitch-text">FIELD RECONNAISSANCE REQUIRED</div>
+        <img src="slides.jpg" alt="Sector Intel">
+        <p>Identify the sector location shown in this photographic intel. Proceed to the site to recover the redacted terminal override password.</p>
+        <div>
+            <label for="passcode">ENTER OVERRIDE PASSWORD:</label><br>
+            <input type="text" id="passcode" autocomplete="off" autocorrect="off" autocapitalize="characters">
+            <div id="errorMsg" class="error">ACCESS DENIED. INCORRECT PASSWORD.</div>
+        </div>
+        <button onclick="checkPassword()">SUBMIT</button>
+    </div>
+
+    <!-- PAGE C: FINAL ASSEMBLY -->
+    <div id="pageC" class="page">
+        <div class="glitch-text">SYSTEM OVERRIDE ACCEPTED.</div>
+        <p>Identity verified. Well done, Agents.</p>
+        <p>The Shadow Vault requires one final computation to disarm. Construct the final sequence using the variables acquired in the field:</p>
+        
+        <div style="border: 1px dashed #00ff41; padding: 20px; margin-top: 20px; font-size: 1.3em;">
+            FINAL_CODE = code_c + 20
+        </div>
+        <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.8;">[TERMINAL SESSION SECURED]</p>
+    </div>
+
+    <script>
+let fadeInterval;
+
+        function fadeInAudio(audioElement, duration = 2000) {
+            // Reset and start playing at zero volume
+            audioElement.volume = 0;
+            audioElement.play().catch(err => {
+                console.log("Autoplay prevented or interaction required:", err);
+            });
+
+            const step = 0.05;
+            const intervalTime = duration * (step / 1);
+
+            clearInterval(fadeInterval);
+            fadeInterval = setInterval(() => {
+                if (audioElement.volume < 1 - step) {
+                    audioElement.volume += step;
+                } else {
+                    audioElement.volume = 1;
+                    clearInterval(fadeInterval);
+                }
+            }, intervalTime);
+        }
+
+        function goToPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Pause video if navigating away
+            const video = document.getElementById('bossVideo');
+            if (video) video.pause();
+
+            // Trigger audio fade-in when moving from Page A to Page B
+            const audio = document.getElementById('spyAudio');
+            if (pageId === 'pageB' && audio.paused) {
+                fadeInAudio(audio, 2500); // Fades in over 2.5 seconds
+            }
+
+            // Show target page
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passcode').value.trim().toUpperCase();
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (input === "DOWNTOWN") {
+                errorMsg.style.display = "none";
+                goToPage('pageC'); // Music will keep playing seamlessly
+            } else {
+                errorMsg.style.display = "block";
+                document.getElementById('passcode').value = ""; // Clear input
+            }
+        }
+
+        // Allow pressing "Enter" on the keyboard to submit the password
+        document.getElementById('passcode').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>
