@@ -221,6 +221,33 @@ let fadeInterval;
                 checkPassword();
             }
         });
+
+        const bossVideo = document.getElementById('bossVideo');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const playBtn = document.getElementById('playBtn');
+        const replayBtn = document.getElementById('replayBtn');
+
+        // Show loader if the video stalls or starts downloading
+        bossVideo.addEventListener('waiting', () => {
+            loadingOverlay.style.display = 'flex';
+            bossVideo.style.display = 'none';
+        });
+
+        // Hide loader and reveal video as soon as it's ready to play smoothly
+        bossVideo.addEventListener('canplaythrough', () => {
+            loadingOverlay.style.display = 'none';
+            bossVideo.style.display = 'block';
+            if (playBtn) playBtn.style.display = 'inline-block';
+            if (replayBtn) replayBtn.style.display = 'inline-block';
+        });
+
+        // Fallback: If 'canplaythrough' doesn't fire due to mobile browser quirks, force show after metadata loads
+        bossVideo.addEventListener('loadeddata', () => {
+            loadingOverlay.style.display = 'none';
+            bossVideo.style.display = 'block';
+            if (playBtn) playBtn.style.display = 'inline-block';
+            if (replayBtn) replayBtn.style.display = 'inline-block';
+        });        
     </script>
 </body>
 </html>
