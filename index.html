@@ -31,20 +31,24 @@
 
         video {
             width: 100%;
-            /* Caps the width so the portrait video doesn't become massively tall on a tablet */
-            max-width: 320px; 
+            /* Keep it mobile-friendly on tablets */
+            max-width: 300px; 
             
-            /* Forces the HTML container to the vertical dimensions */
+            /* Constrain height relative to the screen height so controls/buttons are never pushed off-screen */
+            max-height: 40vh; 
+            
+            /* Maintains the 9:16 portrait ratio */
             aspect-ratio: 9 / 16; 
             
-            /* The magic property: scales the video to fill the 9:16 box, cropping the left/right bars */
+            /* Keeps the center crop behavior, removing the letterboxes */
             object-fit: cover; 
             
             border: 2px solid #00ff41;
             box-shadow: 0 0 15px #00ff41;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-radius: 4px;
         }
+        
         button, input {
             background-color: #050505;
             color: #00ff41;
@@ -72,10 +76,10 @@
     <!-- PAGE A: VIDEO BRIEFING -->
     <div id="pageA" class="page active">
         <div class="glitch-text">INCOMING TRANSMISSION...</div>
-        <video id="bossVideo" playsinline>
+        <video id="bossVideo" playsinline preload="auto">
             <source src="boss.mp4" type="video/mp4">
             Your browser does not support the video tag.
-        </video>
+        </video>        
         <br>
         <button onclick="document.getElementById('bossVideo').play()">▶ PLAY MESSAGE</button>
         <button onclick="document.getElementById('bossVideo').currentTime = 0; document.getElementById('bossVideo').play()">↺ REPLAY</button>
