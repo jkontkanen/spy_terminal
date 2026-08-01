@@ -69,6 +69,42 @@
         input:focus { outline: none; box-shadow: 0 0 10px #00ff41; }
         .error { color: #ff003c; display: none; margin-top: 10px; font-weight: bold; }
         .glitch-text { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+
+/* Loading Overlay Container */
+        #loadingOverlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Pulsing Radar/Spinner Effect */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 255, 65, 0.2);
+            border-top: 4px solid #00ff41;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }        
     </style>
 </head>
 <body>
@@ -76,16 +112,25 @@
     <!-- PAGE A: VIDEO BRIEFING -->
     <div id="pageA" class="page active">
         <div class="glitch-text">INCOMING TRANSMISSION...</div>
-        <video id="bossVideo" playsinline preload="auto">
+        
+        <!-- LOADING INDICATOR -->
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text">DECRYPTING SATELLITE FEED...</div>
+            <p style="font-size: 0.8em; opacity: 0.7;">[PLEASE STAND BY]</p>
+        </div>
+
+        <!-- VIDEO (Initially Hidden via style="display:none;") -->
+        <video id="bossVideo" playsinline preload="auto" style="display: none;">
             <source src="boss.mp4" type="video/mp4">
             Your browser does not support the video tag.
-        </video>        
+        </video>
         <br>
-        <button onclick="document.getElementById('bossVideo').play()">▶ PLAY MESSAGE</button>
-        <button onclick="document.getElementById('bossVideo').currentTime = 0; document.getElementById('bossVideo').play()">↺ REPLAY</button>
+        <button id="playBtn" onclick="document.getElementById('bossVideo').play()" style="display: none;">▶ PLAY MESSAGE</button>
+        <button id="replayBtn" onclick="document.getElementById('bossVideo').currentTime = 0; document.getElementById('bossVideo').play()" style="display: none;">↺ REPLAY</button>
         <button onclick="goToPage('pageB')">NEXT STEP ➔</button>
     </div>
-
+    
     <audio id="spyAudio" src="spytheme.mp3" loop preload="auto"></audio>
     <!-- PAGE B: RECON & OVERRIDE -->
     <div id="pageB" class="page">
